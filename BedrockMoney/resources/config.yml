@@ -1,0 +1,22 @@
+# System-MP config
+
+---
+message:
+  option: false
+  mote: ""
+  join_tip: ""
+  quite_tip: ""
+  first_message: ""
+  join_title: ""
+  error_text: ""
+
+startMoney: 1000
+
+maxMoney: 100000000000
+
+money: false
+
+cash: false
+
+shop: false
+---

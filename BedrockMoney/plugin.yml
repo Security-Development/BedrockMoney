@@ -1,0 +1,6 @@
+name: BedrockMoney
+version: "0.1"
+author: Byte
+main: System\SystemMain
+description: "This is BedrockMoney"
+api: "3.22.2"
