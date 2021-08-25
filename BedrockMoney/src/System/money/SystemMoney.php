@@ -39,17 +39,17 @@ class SystemMoney extends Player
 
   }
 
-  public function getRank() : String
+  public function getRank() : Int
   {
     $array = $this->getMain()->getData("users")->getAll();
     asort($array);
     $array = array_flip(array_keys($array));
-    return (String) ($array[strtolower($this->getName())] + 1);
+    return (Int) ($array[strtolower($this->getName())] + 1);
   }
 
-  public function getMaxMoney() : String
+  public function getMaxMoney() : Int
   {
-    return (String) $this->getMain()->getData("config")->get("maxMoney");
+    return (Int) $this->getMain()->getData("config")->get("maxMoney");
   }
 
   public function subMoney(Int | String | Float $value) : Void
