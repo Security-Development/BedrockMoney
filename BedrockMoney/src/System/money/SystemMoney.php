@@ -72,6 +72,9 @@ class SystemMoney extends Player
     } else {
       $this->addMoney("users", strtolower($player->getName()), $value);
       $this->subMoney("users", strtolower($this->getName()), $value);
+      
+      $this->sendMessage(self::TEXT.$player->getName()."님께 성공적으로 ".((String)number_format($value))."원을 송금 하셨습니다.");
+      $player->sendMessage(self::TEXT.$this->getName()."님이 당신에게 ".((String)number_format($value))."원을 송금 하셨습니다.");
 
     }
 
