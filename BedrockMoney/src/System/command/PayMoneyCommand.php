@@ -52,9 +52,6 @@ class PayMoneyCommand extends Command
           } else {
             $sender->payMoney($player, $args[1]);
 
-            $player->sendMessage(self::TEXT.$sender->getName()."님께 성공적으로 ".$args[1]."원을 송금 하셨습니다.");
-            $sender->sendMessage(self::TEXT.$player->getName()."님이 당신에게 ".$args[1]."원을 송금 하셨습니다.");
-
           }
 
         } else {
