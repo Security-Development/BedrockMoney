@@ -2,7 +2,7 @@
 
 namespace System\money;
 
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\Config;
 

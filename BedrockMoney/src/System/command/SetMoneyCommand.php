@@ -4,7 +4,7 @@ namespace System\command;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\ConsoleCommandSender;
+use pocketmine\console\ConsoleCommandSender;
 
 use System\SystemMain;
 use System\money\SystemMoney;
@@ -17,7 +17,7 @@ class SetMoneyCommand extends Command
   public function __construct(private SystemMain $system)
   {
     parent::__construct("돈설정");
-    $this->setPermission("op");
+    $this->setPermission("bedrock.money.permission");
 
   }
 
@@ -30,11 +30,11 @@ class SetMoneyCommand extends Command
       if(!is_numeric($args[1]))
       {
         $sender->sendMessage(self::TEXT."[1] 명령어 요소가 숫자가 아닙니다.");
-        return ture;
+        return true;
 
       }
 
-      $player = $sender->getServer()->getPlayer($args[0]);
+      $player = $sender->getServer()->getPlayerByPrefix($args[0]);
 
       if($player == null)
       {

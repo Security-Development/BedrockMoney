@@ -4,7 +4,7 @@ namespace System\command;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\ConsoleCommandSender;
+use pocketmine\console\ConsoleCommandSender;
 
 use System\SystemMain;
 
@@ -33,11 +33,11 @@ class PayMoneyCommand extends Command
       if(!is_numeric($args[1]))
       {
         $sender->sendMessage(self::TEXT."[1] 명령어 요소의 데이터타입이 숫자가 아닙니다.");
-        return ture;
+        return true;
 
       }
 
-      $player = $sender->getServer()->getPlayer($args[0]);
+      $player = $sender->getServer()->getPlayerByPrefix($args[0]);
 
       if($player == null)
       {

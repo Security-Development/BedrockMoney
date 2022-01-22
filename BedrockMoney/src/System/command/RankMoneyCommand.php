@@ -4,7 +4,7 @@ namespace System\command;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\ConsoleCommandSender;
+use pocketmine\console\ConsoleCommandSender;
 
 use System\SystemMain;
 
@@ -30,7 +30,7 @@ class RankMoneyCommand extends Command
 
     if(isset($args[0]))
     {
-      $player = $sender->getServer()->getPlayer($args[0]);
+      $player = $sender->getServer()->getPlayerByPrefix($args[0]);
 
       if($player == null)
       {

@@ -5,22 +5,19 @@ namespace System;
 use pocketmine\plugin\PluginBase;
 use pocketmine\event\Listener;
 use pocketmine\utils\Config;
-use pocketmine\Server;
-use pocketmine\Player;
 use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use pocketmine\network\mcpe\protocol\types\CommandParameter;
-use pocketmine\network\mcpe\protocol\types\CommandEnum;
-use pocketmine\network\mcpe\protocol\types\CommandData;
-
+use pocketmine\network\mcpe\protocol\types\command\CommandData;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\player\Player;
 use System\money\SystemMoney;
 
 class SystemMain extends PluginBase
 {
-
   private function CreateConfig(String $name)
   {
     if(!file_exists($this->getDataFolder() . $name))
@@ -73,7 +70,7 @@ class SystemMain extends PluginBase
     $this->CreateConfig("users.yml");
     $system = $this;
 
-    foreach(["payMoneyCommand",
+    foreach(["PayMoneyCommand",
              "CheckMoneyCommand",
              "RankMoneyCommand",
              "SetMoneyCommand",
@@ -121,15 +118,16 @@ class SystemMain extends PluginBase
 
       public function PacketSendEvent(DataPacketSendEvent $event) : Void
       {
-        $pk = $event->getPacket();
-
-        if($pk instanceof AvailableCommandsPacket)
+        foreach($event->getPackets() as $key => $pk)
         {
-          $this->addParameter($pk, "돈송금", "다른 플레이어한테 송금합니다.", ["플레이어이름", "금액"], ["string", "int"]);
-          $this->addParameter($pk, "돈확인", "당신의 돈 혹은 다른 플레이어의 돈을 확인할 수 있습니다.", ["플레이어이름"], ["string"]);
-          $this->addParameter($pk, "돈순위", "당신의 돈 순위 혹은 다른 플레이어의 돈 순위를 확인할 수 있습니다.", ["플레이어이름"], ["string"]);
-          $this->addParameter($pk, "돈설정", "플레이어의 돈을 설정합니다.", ["플레이어이름", "금액"], ["string", "int"], 1);
-          $this->addParameter($pk, "돈조절", "플레이어의 돈을 조절합니다..", ["플레이어이름", "금액"], ["string", "int"], 1);
+          if($pk instanceof AvailableCommandsPacket)
+          {
+            $this->addParameter($pk, "돈송금", "다른 플레이어한테 송금합니다.", ["플레이어이름", "금액"], ["string", "int"]);
+            $this->addParameter($pk, "돈확인", "당신의 돈 혹은 다른 플레이어의 돈을 확인할 수 있습니다.", ["플레이어이름"], ["string"]);
+            $this->addParameter($pk, "돈순위", "당신의 돈 순위 혹은 다른 플레이어의 돈 순위를 확인할 수 있습니다.", ["플레이어이름"], ["string"]);
+            $this->addParameter($pk, "돈설정", "플레이어의 돈을 설정합니다.", ["플레이어이름", "금액"], ["string", "int"], 1);
+            $this->addParameter($pk, "돈조절", "플레이어의 돈을 조절합니다..", ["플레이어이름", "금액"], ["string", "int"], 1);
+          }
         }
 
       }
@@ -137,12 +135,7 @@ class SystemMain extends PluginBase
       public function addParameter(AvailableCommandsPacket $pk, String $commandname = "", String $description = "", Array $param = [], Array $type = [], Int $permission = 0) : Void
       {
         $parType = null;
-
-        $data = new CommandData();
-        $data->commandName = $commandname;
-        $data->commandDescription = $description;
-        $data->flags = 0;
-        $data->permission = $permission;
+        $arr = [];
 
         for($i = 0; $i < count($param); $i++)
         {
@@ -153,29 +146,43 @@ class SystemMain extends PluginBase
             "float" => AvailableCommandsPacket::ARG_TYPE_FLOAT
           };
 
-          $parameter = new CommandParameter();
-          $parameter->paramType = AvailableCommandsPacket::ARG_FLAG_VALID | $parType;
-          $parameter->isOptional = true;
-          $parameter->paramName = $param[$i];
-          $data->overloads[0][$i] = $parameter;
+          $arr[$i] = CommandParameter::standard(
+            $param[$i], 
+            $parType,
+            0,
+            true
+          );
 
         }
 
         $aliases = [];
+        $enum = null;
         if(count($aliases) > 0)
         {
 
-          if(!in_array($data->commandName, $aliases, true))
+          if(!in_array($commandname, $aliases, true))
           {
-            $aliases[] = $data->commandName;
+            $aliases[] = $commandname;
           }
-
-        $data->aliases = new CommandEnum();
-        $data->aliases->enumName = ucfirst($commandname) . "Aliases";
-        $data->aliases->enumValues = array_values($aliases);
+          $enum = new CommandEnum(
+            ucfirst($commandname) . "Aliases",
+            array_values($aliases)
+          );
         }
 
+        $data = new CommandData(
+          $commandname, 
+          $description, 
+          0, 
+          0, 
+          $enum, 
+          [
+            $arr
+          ]
+        );
+
         $pk->commandData[$commandname] = $data;
+
       }
 
     }, $this);
